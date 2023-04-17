@@ -1,0 +1,42 @@
+common:
+    lid_topic:  "/Bob/velodyne_points"
+    imu_topic:  "/Bob/imu/data"
+    time_sync_en: false         # ONLY turn on when external time synchronization is really not possible
+    time_offset_lidar_to_imu: 0.0 # Time offset between lidar and IMU calibrated by other algorithms, e.g. LI-Init (can be found in README).
+                                  # This param will take effect no matter what time_sync_en is. So if the time offset is not known exactly, please set as 0.0
+
+preprocess:
+    lidar_type: 2                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
+    scan_line: 16
+    scan_rate: 10                # only need to be set for velodyne, unit: Hz,
+    timestamp_unit: 0            # the unit of time/t field in the PointCloud2 rostopic: 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
+    blind: 2
+
+mapping:
+    acc_cov: 0.1
+    gyr_cov: 0.1
+    b_acc_cov: 0.0001
+    b_gyr_cov: 0.0001
+
+    # acc_cov: 1.0557715622632996e-02
+    # gyr_cov: 1.0084886221461694e-02
+    # b_acc_cov: 2.3084619195565281e-04
+    # b_gyr_cov: 9.8778648600726277e-05
+
+    fov_degree:    180
+    det_range:     100.0
+    extrinsic_est_en:  false      # true: enable the online estimation of IMU-LiDAR extrinsic,
+    extrinsic_T: [ 0.0139311014210117, -0.0464485767428643, 0.0903215864350017]
+    extrinsic_R: [     0.999836003511839    ,    0.0173801887387422   ,  -0.00508910355728107,
+                     -0.0174346317099175    ,     0.999789063153947   ,   -0.0108560221170907,
+                      0.0048993511713948    ,    0.0109429618430478   ,     0.999928116808771]  
+publish:
+    path_en:  true
+    scan_publish_en:  true       # false: close all the point cloud output
+    dense_publish_en: true       # false: low down the points number in a global-frame point clouds scan.
+    scan_bodyframe_pub_en: false  # true: output the point cloud scans in IMU-body-frame
+
+pcd_save:
+    pcd_save_en: true
+    interval: -1                 # how many LiDAR frames saved in each pcd file; 
+                                 # -1 : all frames will be saved in ONE pcd file, may lead to memory crash when having too much frames.
