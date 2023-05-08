@@ -2,6 +2,12 @@
   <!-- Launch file for velodyne16 VLP-16 LiDAR -->
 
     <arg name="rviz" default="true" />
+    <arg name="bag_start"   default="0" />
+    <arg name="bag_durr"   default="1000" /> 
+    <arg name="bag_rate"    default="1" />
+    <arg name="dataset"     default="S3E_Laboratory_1" /> 
+    <arg name="dobag"       default="true" /> <!-- if we should play back the bag -->
+    <arg name="bag"         default="/home/zzwu/Desktop/dataset/s3e/$(arg dataset).bag" />
 
     <rosparam command="load" file="$(find fast_lio)/config/s3e.yaml" />
 
@@ -14,8 +20,18 @@
     <param name="runtime_pos_log_enable" type="bool" value="0" />
     <node pkg="fast_lio" type="fastlio_mapping" name="laserMapping" output="screen" /> 
 
+    <!-- play the dataset -->
+    <group if="$(arg dobag)">
+        <!-- <node pkg="rosbag" type="play" name="rosbag" args="-d 1 -r $(arg bag_rate) -s $(arg bag_start) $(arg bag)" required="true"/> -->
+        <node pkg="rosbag" type="play" name="rosbag" args="-d 1 -r $(arg bag_rate) -s $(arg bag_start) -u $(arg bag_durr) $(arg bag)" required="true"/>
+    </group>
+
+
     <group if="$(arg rviz)">
     <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find fast_lio)/rviz_cfg/loam_livox.rviz" />
     </group>
+
+	<node pkg="image_transport" type="republish" name="republish2" args="compressed in:=/Bob/left_camera raw out:=/rgb_img" output="screen" respawn="true"/>
+
 
 </launch>
